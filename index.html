@@ -15,8 +15,8 @@
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
     html, body { min-height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); }
-    input, textarea, button { font-family: inherit; }
-    input:focus, textarea:focus { outline: 2px solid #f97316; outline-offset: 2px; }
+    input, textarea, button, select { font-family: inherit; }
+    input:focus, textarea:focus, select:focus { outline: 2px solid #f97316; outline-offset: 2px; }
     button { cursor: pointer; border: none; transition: all 0.15s ease; }
     button:active { transform: scale(0.98); }
     
@@ -39,7 +39,8 @@
     .section h3 { font-size: 12px; font-weight: 700; color: var(--section-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
     
     .label { display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 8px; }
-    .input, .textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; margin-bottom: 12px; }
+    .input, .textarea, .select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 16px; margin-bottom: 12px; }
+    .select { background: white; }
     .textarea { resize: vertical; font-family: inherit; min-height: 60px; }
     
     .btn-row { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
@@ -61,6 +62,10 @@
     .workmode-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
     .workmode-btn { padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; text-transform: capitalize; background: #f1f5f9; color: #475569; }
     .workmode-btn.active { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: white; }
+    
+    .repair-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .repair-btn { padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; background: #f1f5f9; color: #475569; }
+    .repair-btn.active { background: linear-gradient(135deg, #f97316 0%, #fbbf24 100%); color: white; }
     
     .highlight-box { margin-top: 16px; background: #fff7ed; border: 2px solid #f97316; border-radius: 12px; padding: 14px; }
     .highlight-box.yellow { background: #fefce8; border-color: #fbbf24; }
@@ -90,8 +95,9 @@
 </head>
 <body>
   <div class="header">
-    <h1>Daily Reflection</h1>
-    <p class="icon-row">✨📖✨</p>
+    <h1>DRIP</h1>
+    <p style="font-size: 11px; color: #94a3b8; text-align: center; margin-top: 2px; font-style: italic;">Daily Reflection & Intention Practice</p>
+    <p class="icon-row">💧📖💧</p>
     <p id="header-date"></p>
   </div>
   
@@ -113,11 +119,26 @@
         <h3>Grounding</h3>
         <label class="label">Date</label>
         <input type="text" class="input" id="m-date">
+        <label class="label">Day of the Week</label>
+        <select class="select" id="m-day-of-week">
+          <option value="">Select...</option>
+          <option value="Sunday">Sunday</option>
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="Thursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+        </select>
         <label class="label">Hours of Sleep</label>
         <div class="btn-row" id="m-sleep-btns"></div>
         <div class="mt-16">
           <label class="label">One word for how I woke up</label>
           <input type="text" class="input" id="m-woke-word" placeholder="e.g., rested, exhausted, motivated...">
+        </div>
+        <div class="mt-16">
+          <label class="label">Is there something this morning you're already proud of or grateful for?</label>
+          <textarea class="textarea" id="m-morning-pride" placeholder="Optional..." rows="2"></textarea>
         </div>
       </div>
       
@@ -132,6 +153,10 @@
         <div class="highlight-box">
           <label class="label">📅 What action/calendar item emerged?</label>
           <textarea class="textarea" id="m-action-item" placeholder="The concrete thing that goes on the list" rows="2"></textarea>
+        </div>
+        <div class="mt-16">
+          <label class="label">What else is present? (Musing space)</label>
+          <textarea class="textarea" id="m-others" placeholder="Whatever's floating around in your mind right now..." rows="3"></textarea>
         </div>
       </div>
       
@@ -163,8 +188,8 @@
         
         <div class="section hidden" id="m-professional-section" style="--section-color: #3b82f6;">
           <h3>Professional</h3>
-          <label class="label">What task am I most dreading, and how can I approach it with curiosity?</label>
-          <textarea class="textarea" id="m-professional-hardest"></textarea>
+          <label class="label">Where is curiosity asking me to lean in today?</label>
+          <textarea class="textarea" id="m-professional-hardest" placeholder="What's pulling your attention? Where could curiosity lead?"></textarea>
           <label class="label">Where could I coast but won't?</label>
           <textarea class="textarea" id="m-professional-coast"></textarea>
         </div>
@@ -223,8 +248,6 @@
         <input type="text" class="input" id="n-date">
         <label class="label">Day of Week</label>
         <input type="text" class="input" id="n-day">
-        <label class="label">Hours of Sleep (last night)</label>
-        <div class="btn-row" id="n-sleep-btns"></div>
       </div>
       
       <div class="section" style="--section-color: #f97316;">
@@ -298,15 +321,28 @@
           <h3>Professional Confidence</h3>
           <label class="label">Work mode</label>
           <div class="workmode-row" id="n-workmode"></div>
-          <div class="mt-16">
-            <label class="label">Teaching confidence (1-10)</label>
-            <div class="btn-row" id="n-teaching-btns"></div>
-            <input type="text" class="input mt-12" id="n-teaching-notes" placeholder="Notes...">
+          <div id="n-professional-fields">
+            <div class="mt-16">
+              <label class="label">Teaching confidence (1-10)</label>
+              <div class="btn-row" id="n-teaching-btns"></div>
+              <input type="text" class="input mt-12" id="n-teaching-notes" placeholder="Notes...">
+            </div>
+            <div class="mt-16">
+              <label class="label">Leadership confidence (1-10)</label>
+              <div class="btn-row" id="n-leadership-btns"></div>
+              <input type="text" class="input mt-12" id="n-leadership-notes" placeholder="Notes...">
+            </div>
           </div>
+        </div>
+        
+        <div class="section" style="--section-color: #10b981;">
+          <h3>Entrepreneurial</h3>
+          <label class="label">Entrepreneurial confidence (1-10)</label>
+          <div class="btn-row" id="n-entrepreneurial-btns"></div>
+          <input type="text" class="input mt-12" id="n-entrepreneurial-notes" placeholder="Notes...">
           <div class="mt-16">
-            <label class="label">Leadership confidence (1-10)</label>
-            <div class="btn-row" id="n-leadership-btns"></div>
-            <input type="text" class="input mt-12" id="n-leadership-notes" placeholder="Notes...">
+            <label class="label">Product Updates</label>
+            <textarea class="textarea" id="n-product-updates" placeholder="Which products touched, progress, blockers..." rows="3"></textarea>
           </div>
         </div>
         
@@ -326,15 +362,15 @@
             <input type="text" class="input mt-12" id="n-wife-notes" placeholder="Notes...">
           </div>
           <div class="mt-16">
-            <label class="label">Reached out to a friend?</label>
+            <label class="label">Connected with a friend?</label>
             <div class="yesno-row" id="n-friend"></div>
             <div class="mt-12 hidden" id="n-friend-details">
               <div class="flex-row mb-8">
                 <input type="text" class="input" id="n-friend-who" placeholder="Who?">
                 <input type="text" class="input" id="n-friend-method" placeholder="Method">
               </div>
-              <label class="label">Response?</label>
-              <div class="yesno-row" id="n-friend-response"></div>
+              <label class="label">What was the heart of the conversation?</label>
+              <textarea class="textarea" id="n-friend-heart" placeholder="The substance of what you talked about..." rows="2"></textarea>
             </div>
           </div>
         </div>
@@ -357,11 +393,29 @@
         </div>
         
         <div class="section" style="--section-color: #64748b;">
-          <h3>Qualitative</h3>
+          <h3>Interactions</h3>
           <label class="label">One interaction that lifted me (+ who)</label>
           <textarea class="textarea" id="n-lifted"></textarea>
-          <label class="label">One that cost me (+ who)</label>
-          <textarea class="textarea" id="n-cost"></textarea>
+          <div class="mt-16">
+            <label class="label">One that cost me (+ who)</label>
+            <textarea class="textarea" id="n-cost"></textarea>
+          </div>
+          <div class="mt-16" id="n-repair-section">
+            <label class="label">Repaired?</label>
+            <div class="repair-row" id="n-repair-status"></div>
+            <div class="mt-12 hidden" id="n-repair-when-wrap">
+              <label class="label">When?</label>
+              <input type="text" class="input" id="n-repair-timing" placeholder="Same day / note date">
+            </div>
+            <div class="mt-12 hidden" id="n-repair-blocker-wrap">
+              <label class="label">What's in the way?</label>
+              <textarea class="textarea" id="n-repair-obstacle" placeholder="What's blocking the repair?" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="mt-16">
+            <label class="label">Any prior "cost" interactions now repaired?</label>
+            <textarea class="textarea" id="n-prior-repairs" placeholder="Note which + when (reference original date)..." rows="2"></textarea>
+          </div>
         </div>
       </div>
     </div>
@@ -382,7 +436,7 @@
     // Register Service Worker for offline support
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'reflection-v1';
+        const CACHE_NAME = 'reflection-v2';
         self.addEventListener('install', e => {
           e.waitUntil(
             caches.open(CACHE_NAME).then(cache => cache.addAll(['/']))
@@ -414,9 +468,9 @@
       activeTab: 'morning',
       morningVersion: 'core',
       nightlyVersion: 'core',
-      morning: { date: '', sleepHours: 7, wokeUpWord: '', domains: [], oneThing: '', actionItem: '', physicalSensation: '', holdingTension: '', relationalPresent: '', relationalPlan: '', creativeWhat: '', creativeWhen: '', professionalHardest: '', professionalCoast: '', physicalAsking: '', physicalWhen: '', financialAvoiding: '', financialStewardship: '', success: '', anchored: '', carryForward: '' },
+      morning: { date: '', dayOfWeek: '', sleepHours: 7, wokeUpWord: '', morningPride: '', domains: [], oneThing: '', actionItem: '', others: '', physicalSensation: '', holdingTension: '', relationalPresent: '', relationalPlan: '', creativeWhat: '', creativeWhen: '', professionalHardest: '', professionalCoast: '', physicalAsking: '', physicalWhen: '', financialAvoiding: '', financialStewardship: '', success: '', anchored: '', carryForward: '' },
       moment: { text: '' },
-      nightly: { date: '', dayOfWeek: '', sleepHours: 7, selfRating: 7, selfRatingNotes: '', didOneThing: null, whatMadeItPossible: '', whatGotInTheWay: '', sittingWithMe: '', movement: null, movementType: '', movementDuration: '', movementNotes: '', ateWell: 7, ateWellNotes: '', mindfulness: null, mindfulnessQuality: 7, mindfulnessNotes: '', physicalSignals: '', workMode: '', teachingConfidence: 7, teachingNotes: '', leadershipConfidence: 7, leadershipNotes: '', energy: 7, energyNotes: '', kidsPresence: 7, kidsNotes: '', wifePresence: 7, wifeNotes: '', friendOutreach: null, friendWho: '', friendMethod: '', friendResponse: null, musicProduction: null, musicNotes: '', writing: null, writingNotes: '', capturedBeautiful: null, beautifulNotes: '', liftedInteraction: '', costInteraction: '' }
+      nightly: { date: '', dayOfWeek: '', selfRating: 7, selfRatingNotes: '', didOneThing: null, whatMadeItPossible: '', whatGotInTheWay: '', sittingWithMe: '', movement: null, movementType: '', movementDuration: '', movementNotes: '', ateWell: 7, ateWellNotes: '', mindfulness: null, mindfulnessQuality: 7, mindfulnessNotes: '', physicalSignals: '', workMode: '', teachingConfidence: 7, teachingNotes: '', leadershipConfidence: 7, leadershipNotes: '', entrepreneurialConfidence: 7, entrepreneurialNotes: '', productUpdates: '', energy: 7, energyNotes: '', kidsPresence: 7, kidsNotes: '', wifePresence: 7, wifeNotes: '', friendConnection: null, friendWho: '', friendMethod: '', friendHeart: '', musicProduction: null, musicNotes: '', writing: null, writingNotes: '', capturedBeautiful: null, beautifulNotes: '', liftedInteraction: '', costInteraction: '', repairStatus: '', repairTiming: '', repairObstacle: '', priorRepairs: '' }
     };
 
     // Date helpers
@@ -437,6 +491,7 @@
 
     // Initialize dates
     if (!state.morning.date) state.morning.date = dateInfo.formatted;
+    if (!state.morning.dayOfWeek) state.morning.dayOfWeek = dateInfo.dayOfWeek;
     if (!state.nightly.date) state.nightly.date = dateInfo.formatted;
     if (!state.nightly.dayOfWeek) state.nightly.dayOfWeek = dateInfo.dayOfWeek;
 
@@ -450,7 +505,13 @@
       if (saved) {
         try {
           const data = JSON.parse(saved);
-          Object.assign(state, data);
+          // Merge saved data with current state structure to handle new fields
+          if (data.morning) Object.assign(state.morning, data.morning);
+          if (data.moment) Object.assign(state.moment, data.moment);
+          if (data.nightly) Object.assign(state.nightly, data.nightly);
+          if (data.activeTab) state.activeTab = data.activeTab;
+          if (data.morningVersion) state.morningVersion = data.morningVersion;
+          if (data.nightlyVersion) state.nightlyVersion = data.nightlyVersion;
         } catch (e) {}
       }
     }
@@ -532,11 +593,32 @@
       });
     }
 
+    function createRepairStatusButtons() {
+      const container = document.getElementById('n-repair-status');
+      const statuses = ['Yes', 'No', 'Partial', 'N/A'];
+      container.innerHTML = '';
+      statuses.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'repair-btn' + (state.nightly.repairStatus === s ? ' active' : '');
+        btn.textContent = s;
+        btn.onclick = () => { state.nightly.repairStatus = s; saveState(); renderAll(); };
+        container.appendChild(btn);
+      });
+    }
+
     // Bind inputs
     function bindInput(id, obj, key) {
       const el = document.getElementById(id);
+      if (!el) return;
       el.value = obj[key] || '';
       el.oninput = () => { obj[key] = el.value; saveState(); };
+    }
+
+    function bindSelect(id, obj, key) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = obj[key] || '';
+      el.onchange = () => { obj[key] = el.value; saveState(); };
     }
 
     // Render
@@ -573,9 +655,12 @@
 
       // Morning inputs
       bindInput('m-date', state.morning, 'date');
+      bindSelect('m-day-of-week', state.morning, 'dayOfWeek');
       bindInput('m-woke-word', state.morning, 'wokeUpWord');
+      bindInput('m-morning-pride', state.morning, 'morningPride');
       bindInput('m-one-thing', state.morning, 'oneThing');
       bindInput('m-action-item', state.morning, 'actionItem');
+      bindInput('m-others', state.morning, 'others');
       bindInput('m-physical-sensation', state.morning, 'physicalSensation');
       bindInput('m-holding-tension', state.morning, 'holdingTension');
       bindInput('m-relational-present', state.morning, 'relationalPresent');
@@ -610,6 +695,8 @@
       bindInput('n-physical-signals', state.nightly, 'physicalSignals');
       bindInput('n-teaching-notes', state.nightly, 'teachingNotes');
       bindInput('n-leadership-notes', state.nightly, 'leadershipNotes');
+      bindInput('n-entrepreneurial-notes', state.nightly, 'entrepreneurialNotes');
+      bindInput('n-product-updates', state.nightly, 'productUpdates');
       bindInput('n-energy-notes', state.nightly, 'energyNotes');
       bindInput('n-kids-notes', state.nightly, 'kidsNotes');
       bindInput('n-wife-notes', state.nightly, 'wifeNotes');
@@ -620,10 +707,12 @@
       bindInput('n-beautiful-notes', state.nightly, 'beautifulNotes');
       bindInput('n-lifted', state.nightly, 'liftedInteraction');
       bindInput('n-cost', state.nightly, 'costInteraction');
+      bindInput('n-repair-timing', state.nightly, 'repairTiming');
+      bindInput('n-repair-obstacle', state.nightly, 'repairObstacle');
+      bindInput('n-prior-repairs', state.nightly, 'priorRepairs');
 
-      // Sleep buttons
+      // Sleep buttons (morning only now)
       createSleepButtons('m-sleep-btns', state.morning.sleepHours, v => { state.morning.sleepHours = v; saveState(); });
-      createSleepButtons('n-sleep-btns', state.nightly.sleepHours, v => { state.nightly.sleepHours = v; saveState(); });
 
       // Rating buttons
       createRatingButtons('n-self-rating-btns', state.nightly.selfRating, v => { state.nightly.selfRating = v; saveState(); });
@@ -631,6 +720,7 @@
       createRatingButtons('n-mindfulness-quality-btns', state.nightly.mindfulnessQuality, v => { state.nightly.mindfulnessQuality = v; saveState(); });
       createRatingButtons('n-teaching-btns', state.nightly.teachingConfidence, v => { state.nightly.teachingConfidence = v; saveState(); });
       createRatingButtons('n-leadership-btns', state.nightly.leadershipConfidence, v => { state.nightly.leadershipConfidence = v; saveState(); });
+      createRatingButtons('n-entrepreneurial-btns', state.nightly.entrepreneurialConfidence, v => { state.nightly.entrepreneurialConfidence = v; saveState(); });
       createRatingButtons('n-energy-btns', state.nightly.energy, v => { state.nightly.energy = v; saveState(); });
       createRatingButtons('n-kids-btns', state.nightly.kidsPresence, v => { state.nightly.kidsPresence = v; saveState(); });
       createRatingButtons('n-wife-btns', state.nightly.wifePresence, v => { state.nightly.wifePresence = v; saveState(); });
@@ -646,9 +736,9 @@
       createYesNoButtons('n-mindfulness', state.nightly.mindfulness, v => { state.nightly.mindfulness = v; saveState(); });
       document.getElementById('n-mindfulness-details').classList.toggle('hidden', state.nightly.mindfulness !== true);
 
-      createYesNoButtons('n-friend', state.nightly.friendOutreach, v => { state.nightly.friendOutreach = v; saveState(); });
-      document.getElementById('n-friend-details').classList.toggle('hidden', state.nightly.friendOutreach !== true);
-      createYesNoButtons('n-friend-response', state.nightly.friendResponse, v => { state.nightly.friendResponse = v; saveState(); });
+      createYesNoButtons('n-friend', state.nightly.friendConnection, v => { state.nightly.friendConnection = v; saveState(); });
+      document.getElementById('n-friend-details').classList.toggle('hidden', state.nightly.friendConnection !== true);
+      bindInput('n-friend-heart', state.nightly, 'friendHeart');
 
       createYesNoButtons('n-music', state.nightly.musicProduction, v => { state.nightly.musicProduction = v; saveState(); });
       document.getElementById('n-music-notes-wrap').classList.toggle('hidden', state.nightly.musicProduction === null);
@@ -659,21 +749,35 @@
       createYesNoButtons('n-beautiful', state.nightly.capturedBeautiful, v => { state.nightly.capturedBeautiful = v; saveState(); });
       document.getElementById('n-beautiful-notes-wrap').classList.toggle('hidden', state.nightly.capturedBeautiful === null);
 
+      // Repair status buttons and conditional fields
+      createRepairStatusButtons();
+      document.getElementById('n-repair-when-wrap').classList.toggle('hidden', state.nightly.repairStatus !== 'Yes' && state.nightly.repairStatus !== 'Partial');
+      document.getElementById('n-repair-blocker-wrap').classList.toggle('hidden', state.nightly.repairStatus !== 'No');
+
       // Domains and work mode
       createDomainChips();
       createWorkModeButtons();
+      
+      // Hide teaching/leadership fields when work mode is "off"
+      const professionalFields = document.getElementById('n-professional-fields');
+      if (professionalFields) {
+        professionalFields.classList.toggle('hidden', state.nightly.workMode === 'off');
+      }
     }
 
     // Generate output
     function generateMorningOutput() {
       let o = `Daily Morning Intention Practice\n\n**CORE**\n\n*Grounding*\n`;
       o += `- Date: ${state.morning.date}\n`;
+      o += `- Day of the Week: ${state.morning.dayOfWeek || '(not selected)'}\n`;
       o += `- Hours of sleep: ${state.morning.sleepHours}\n`;
-      o += `- One word for how I woke up: ${state.morning.wokeUpWord || '(not entered)'}\n\n`;
-      o += `*Orientation*\n`;
+      o += `- One word for how I woke up: ${state.morning.wokeUpWord || '(not entered)'}\n`;
+      if (state.morning.morningPride) o += `- Already proud of or grateful for: ${state.morning.morningPride}\n`;
+      o += `\n*Orientation*\n`;
       o += `- What domain is asking for my attention today? ${state.morning.domains.length > 0 ? state.morning.domains.join(', ') : '(none selected)'}\n`;
       o += `- **What's the ONE specific thing that, if I do it, makes today a win?** ${state.morning.oneThing || '(not entered)'}\n`;
       o += `- **What action/calendar item emerged from this reflection?** ${state.morning.actionItem || '(not entered)'}\n`;
+      if (state.morning.others) o += `- What else is present? ${state.morning.others}\n`;
       
       if (state.morningVersion === 'full') {
         o += `\n---\n\n**FULL VERSION**\n\n*Body Awareness*\n`;
@@ -692,7 +796,7 @@
         }
         if (state.morning.domains.includes('Professional')) {
           o += `\n*Professional*\n`;
-          o += `- What task am I most dreading, and how can I approach it with curiosity? ${state.morning.professionalHardest || '(not entered)'}\n`;
+          o += `- Where is curiosity asking me to lean in today? ${state.morning.professionalHardest || '(not entered)'}\n`;
           o += `- Where could I coast but won't? ${state.morning.professionalCoast || '(not entered)'}\n`;
         }
         if (state.morning.domains.includes('Physical')) {
@@ -720,8 +824,7 @@
     function generateNightlyOutput() {
       let o = `Daily Nightly Reflection Practice\n\n**CORE**\n`;
       o += `- Date: ${state.nightly.date}\n`;
-      o += `- Day of week: ${state.nightly.dayOfWeek}\n`;
-      o += `- Hours of sleep (last night): ${state.nightly.sleepHours}\n\n`;
+      o += `- Day of week: ${state.nightly.dayOfWeek}\n\n`;
       o += `- **Showed up as the version of myself I want to be (1-10):** ${state.nightly.selfRating}\n`;
       o += `- Notes: ${state.nightly.selfRatingNotes || '(none)'}\n\n`;
       o += `- **Did I do the ONE thing I named this morning?** ${state.nightly.didOneThing === true ? 'Yes' : state.nightly.didOneThing === false ? 'No' : '(not answered)'}\n`;
@@ -747,10 +850,18 @@
 
         o += `\n*Professional Confidence*\n`;
         o += `- Work mode: ${state.nightly.workMode || '(not selected)'}\n`;
-        o += `- Teaching confidence (1-10): ${state.nightly.teachingConfidence}`;
-        if (state.nightly.teachingNotes) o += ` | Notes: ${state.nightly.teachingNotes}`;
-        o += `\n- Leadership confidence (1-10): ${state.nightly.leadershipConfidence}`;
-        if (state.nightly.leadershipNotes) o += ` | Notes: ${state.nightly.leadershipNotes}`;
+        if (state.nightly.workMode !== 'off') {
+          o += `- Teaching confidence (1-10): ${state.nightly.teachingConfidence}`;
+          if (state.nightly.teachingNotes) o += ` | Notes: ${state.nightly.teachingNotes}`;
+          o += `\n- Leadership confidence (1-10): ${state.nightly.leadershipConfidence}`;
+          if (state.nightly.leadershipNotes) o += ` | Notes: ${state.nightly.leadershipNotes}`;
+          o += '\n';
+        }
+
+        o += `\n*Entrepreneurial*\n`;
+        o += `- Entrepreneurial confidence (1-10): ${state.nightly.entrepreneurialConfidence}`;
+        if (state.nightly.entrepreneurialNotes) o += ` | Notes: ${state.nightly.entrepreneurialNotes}`;
+        if (state.nightly.productUpdates) o += `\n- Product Updates: ${state.nightly.productUpdates}`;
 
         o += `\n\n*Relational Presence*\n`;
         o += `- Energy (1-10): ${state.nightly.energy}`;
@@ -759,9 +870,10 @@
         if (state.nightly.kidsNotes) o += ` | Notes: ${state.nightly.kidsNotes}`;
         o += `\n- Present and intentionally curious with wife (1-10): ${state.nightly.wifePresence}`;
         if (state.nightly.wifeNotes) o += ` | Notes: ${state.nightly.wifeNotes}`;
-        o += `\n- Reached out to a friend? ${state.nightly.friendOutreach === true ? 'Yes' : state.nightly.friendOutreach === false ? 'No' : '(not answered)'}`;
-        if (state.nightly.friendOutreach === true) {
-          o += ` | Who: ${state.nightly.friendWho || '—'} | Method: ${state.nightly.friendMethod || '—'} | Response? ${state.nightly.friendResponse === true ? 'Yes' : state.nightly.friendResponse === false ? 'No' : '—'}`;
+        o += `\n- Connected with a friend? ${state.nightly.friendConnection === true ? 'Yes' : state.nightly.friendConnection === false ? 'No' : '(not answered)'}`;
+        if (state.nightly.friendConnection === true) {
+          o += ` | Who: ${state.nightly.friendWho || '—'} | Method: ${state.nightly.friendMethod || '—'}`;
+          if (state.nightly.friendHeart) o += `\n  Heart of the conversation: ${state.nightly.friendHeart}`;
         }
 
         o += `\n\n*Passion Pursuits*\n`;
@@ -772,9 +884,20 @@
         o += `\n- Captured something beautiful? ${state.nightly.capturedBeautiful === true ? 'Yes' : state.nightly.capturedBeautiful === false ? 'No' : '(not answered)'}`;
         if (state.nightly.beautifulNotes) o += ` | Notes: ${state.nightly.beautifulNotes}`;
 
-        o += `\n\n*Qualitative*\n`;
+        o += `\n\n*Interactions*\n`;
         o += `- One interaction that lifted me (+ who): ${state.nightly.liftedInteraction || '(not entered)'}\n`;
         o += `- One that cost me (+ who): ${state.nightly.costInteraction || '(not entered)'}\n`;
+        if (state.nightly.repairStatus) {
+          o += `- Repaired? ${state.nightly.repairStatus}`;
+          if ((state.nightly.repairStatus === 'Yes' || state.nightly.repairStatus === 'Partial') && state.nightly.repairTiming) {
+            o += ` | When: ${state.nightly.repairTiming}`;
+          }
+          if (state.nightly.repairStatus === 'No' && state.nightly.repairObstacle) {
+            o += `\n  What's in the way: ${state.nightly.repairObstacle}`;
+          }
+          o += '\n';
+        }
+        if (state.nightly.priorRepairs) o += `- Prior repairs completed: ${state.nightly.priorRepairs}\n`;
       }
       return o;
     }
@@ -783,11 +906,11 @@
     function clearCurrentForm() {
       const fresh = getDateInfo();
       if (state.activeTab === 'morning') {
-        state.morning = { date: fresh.formatted, sleepHours: 7, wokeUpWord: '', domains: [], oneThing: '', actionItem: '', physicalSensation: '', holdingTension: '', relationalPresent: '', relationalPlan: '', creativeWhat: '', creativeWhen: '', professionalHardest: '', professionalCoast: '', physicalAsking: '', physicalWhen: '', financialAvoiding: '', financialStewardship: '', success: '', anchored: '', carryForward: '' };
+        state.morning = { date: fresh.formatted, dayOfWeek: fresh.dayOfWeek, sleepHours: 7, wokeUpWord: '', morningPride: '', domains: [], oneThing: '', actionItem: '', others: '', physicalSensation: '', holdingTension: '', relationalPresent: '', relationalPlan: '', creativeWhat: '', creativeWhen: '', professionalHardest: '', professionalCoast: '', physicalAsking: '', physicalWhen: '', financialAvoiding: '', financialStewardship: '', success: '', anchored: '', carryForward: '' };
       } else if (state.activeTab === 'moment') {
         state.moment = { text: '' };
       } else {
-        state.nightly = { date: fresh.formatted, dayOfWeek: fresh.dayOfWeek, sleepHours: 7, selfRating: 7, selfRatingNotes: '', didOneThing: null, whatMadeItPossible: '', whatGotInTheWay: '', sittingWithMe: '', movement: null, movementType: '', movementDuration: '', movementNotes: '', ateWell: 7, ateWellNotes: '', mindfulness: null, mindfulnessQuality: 7, mindfulnessNotes: '', physicalSignals: '', workMode: '', teachingConfidence: 7, teachingNotes: '', leadershipConfidence: 7, leadershipNotes: '', energy: 7, energyNotes: '', kidsPresence: 7, kidsNotes: '', wifePresence: 7, wifeNotes: '', friendOutreach: null, friendWho: '', friendMethod: '', friendResponse: null, musicProduction: null, musicNotes: '', writing: null, writingNotes: '', capturedBeautiful: null, beautifulNotes: '', liftedInteraction: '', costInteraction: '' };
+        state.nightly = { date: fresh.formatted, dayOfWeek: fresh.dayOfWeek, selfRating: 7, selfRatingNotes: '', didOneThing: null, whatMadeItPossible: '', whatGotInTheWay: '', sittingWithMe: '', movement: null, movementType: '', movementDuration: '', movementNotes: '', ateWell: 7, ateWellNotes: '', mindfulness: null, mindfulnessQuality: 7, mindfulnessNotes: '', physicalSignals: '', workMode: '', teachingConfidence: 7, teachingNotes: '', leadershipConfidence: 7, leadershipNotes: '', entrepreneurialConfidence: 7, entrepreneurialNotes: '', productUpdates: '', energy: 7, energyNotes: '', kidsPresence: 7, kidsNotes: '', wifePresence: 7, wifeNotes: '', friendConnection: null, friendWho: '', friendMethod: '', friendHeart: '', musicProduction: null, musicNotes: '', writing: null, writingNotes: '', capturedBeautiful: null, beautifulNotes: '', liftedInteraction: '', costInteraction: '', repairStatus: '', repairTiming: '', repairObstacle: '', priorRepairs: '' };
       }
       saveState();
       renderAll();
